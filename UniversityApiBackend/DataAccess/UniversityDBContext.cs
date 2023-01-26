@@ -8,6 +8,8 @@ namespace UniversityApiBackend.DataAccess
         public UniversityDBContext(DbContextOptions<UniversityDBContext> options) : base(options) { }
 
         public DbSet<User>? Users { get; set; }
+
+        public DbSet<Curso> Cursos { get; set; }
     }
     // ToDo Add Dbsets (Tables of ouser Data Base)
 }
