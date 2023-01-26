@@ -4,9 +4,9 @@ namespace UniversityApiBackend.Models.DataModels
 {
     public class Curso : BaseEntity
     {
-        [MaxLength(280)]
+        [StringLength(280)]
         public string Nombre { get; set; } = string.Empty;
-        [MaxLength(280)]
+        [StringLength(280)]
         public string DescripcionCorta { get; set; } = string.Empty;
 
         public string DescripcionLarga { get; set; } = string.Empty;
