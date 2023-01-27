@@ -1,6 +1,7 @@
 //1. Usings to work with entityFramework
 using Microsoft.EntityFrameworkCore;
 using UniversityApiBackend.DataAccess;
+using UniversityApiBackend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +15,9 @@ builder.Services.AddDbContext<UniversityDBContext>(options => options.UseSqlServ
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddScoped<IStudentService, StudentService>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -27,10 +31,22 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+builder.Services.AddCors(option =>
+{
+    option.AddPolicy(name: "CorsePolicy", builder =>
+    {
+        builder.AllowAnyOrigin();
+        builder.AllowAnyMethod();
+        builder.AllowAnyHeader();
+    });
+});
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseCors("CorsePolicy");
 
 app.Run();
