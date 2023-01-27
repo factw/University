@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using UniversityApiBackend.DataAccess;
 using UniversityApiBackend.Services;
 
+
 var builder = WebApplication.CreateBuilder(args);
 
 //2. Connection with SQL Server Express
@@ -14,12 +15,18 @@ builder.Services.AddDbContext<UniversityDBContext>(options => options.UseSqlServ
 
 // Add services to the container.
 
+//builder.Services.AddJwtTokenService(builder.Configuration);
+
+
 builder.Services.AddControllers();
 
 builder.Services.AddScoped<IStudentService, StudentService>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
+
+//Configurar Swagger to take care of Autorization of JWT
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
