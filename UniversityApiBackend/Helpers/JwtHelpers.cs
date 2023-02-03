@@ -76,7 +76,7 @@ namespace UniversityApiBackend.Helpers
             }
             catch (Exception exception)
             {
-                throw new Exception("Error generando el JWT");
+                throw new Exception("Error generando el JWT", exception);
             }
 
         }
