@@ -1,8 +1,10 @@
-﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+﻿using InternationalAPI.Resources.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Localization;
 using UniversityApiBackend.DataAccess;
 using UniversityApiBackend.Helpers;
 using UniversityApiBackend.Models.DataModels;
@@ -15,30 +17,37 @@ namespace UniversityApiBackend.Controllers
     {
         private readonly JwtSettings _jwtSettings;
         private readonly UniversityDBContext _context;
+        private readonly IStringLocalizer<AccountsController> _stringLocalizer;
+        private readonly IStringLocalizer<SharedResource> _sharedResourceLocalizer;
 
-        public AccountsController(JwtSettings jwtSettings, UniversityDBContext universityDBContext)
+        public AccountsController(JwtSettings jwtSettings, 
+                                  UniversityDBContext universityDBContext, 
+                                  IStringLocalizer<AccountsController> stringLocalizer, 
+                                  IStringLocalizer<SharedResource> sharedResourceLocalizer)
         {
             _jwtSettings = jwtSettings;
             _context = universityDBContext;
+            _stringLocalizer = stringLocalizer;
+            _sharedResourceLocalizer = sharedResourceLocalizer;
         }
 
-        private IEnumerable<User> Logins = new List<User>()
-        {
-            new User()
-            {
-                Id= 1,
-                EmailAddress="ts@dominio.com",
-                Name = "Admin",
-                Password = "Admin"
-            },
-            new User()
-            {
-                Id= 2,
-                EmailAddress="pepe@dominio.com",
-                Name = "User1",
-                Password = "pepe"
-            }
-        };
+        //private IEnumerable<User> Logins = new List<User>()
+        //{
+        //    new User()
+        //    {
+        //        Id= 1,
+        //        EmailAddress="ts@dominio.com",
+        //        Name = "Admin",
+        //        Password = "Admin"
+        //    },
+        //    new User()
+        //    {
+        //        Id= 2,
+        //        EmailAddress="pepe@dominio.com",
+        //        Name = "User1",
+        //        Password = "pepe"
+        //    }
+        //};
 
         [HttpPost("GetToken")]
         public IActionResult GetToken(UserLogins userLogin) 
@@ -64,17 +73,23 @@ namespace UniversityApiBackend.Controllers
                         Id = searchUser.Id,
                         GuidId = Guid.NewGuid()
                     }, _jwtSettings);
-
                 }
                 else
                 {
                     return BadRequest("Wrong Password");
                 }
 
-                return Ok(Token);
+                var postName = _stringLocalizer.GetString("Welcome").Value ?? string.Empty;
+
+                return Ok(new
+                {
+                    PostName = postName,
+                    TokenGenerated = Token,
+                });
 
 
-            }catch(Exception ex) 
+            }
+            catch(Exception ex) 
             {
                 throw new Exception("GetToken Error", ex);
             }
@@ -83,8 +98,9 @@ namespace UniversityApiBackend.Controllers
         [HttpGet]
         [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme, Roles = "Administrador")]
         public IActionResult GetUserList()
-        { 
-            return Ok(Logins);
+        {
+            return Ok((from user in _context.Users
+                       select user).ToList());
         }
     }
 }

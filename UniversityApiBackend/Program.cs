@@ -7,6 +7,7 @@ using UniversityApiBackend.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddLocalization(options => options.ResourcesPath = "Resources");
 
 //2. Connection with SQL Server Express
 const string CONNECTIONNAME = "UniversityDB";
@@ -18,7 +19,6 @@ builder.Services.AddDbContext<UniversityDBContext>(options => options.UseSqlServ
 // Add services to the container.
 
 builder.Services.AddJwtTokenServices(builder.Configuration);
-
 
 builder.Services.AddControllers();
 
@@ -82,6 +82,17 @@ builder.Services.AddCors();//option =>
 //        //builder.AllowAnyHeader();
 //    });
 //});
+
+//Supported culture
+var supportedCultures = new[] { "en-US", "es-ES", "fr-FR" };
+var localizationOptions = new RequestLocalizationOptions()
+    .SetDefaultCulture(supportedCultures[0])
+    .AddSupportedCultures(supportedCultures)
+    .AddSupportedCultures(supportedCultures);
+
+//Add localization to app
+
+app.UseRequestLocalization(localizationOptions);
 
 app.UseHttpsRedirection();
 

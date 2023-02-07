@@ -9,3 +9,4 @@ namespace UniversityApiBackend.Services
         Task<IEnumerable<Student>> GetStudentsWithNoCourse();        
     }
 }
+ 
